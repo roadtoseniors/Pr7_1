@@ -1,7 +1,7 @@
 ## Задание 2 — Отладка приложения «Фибоначчи»
 
 **Ссылка на туториал:** https://learn.microsoft.com/ru-ru/training/modules/dotnet-debug-visual-studio/4-use-visual-studio-debugger  
-**Ветка репозитория:** `task2-fibonacci`
+
 
 ### Описание
 
