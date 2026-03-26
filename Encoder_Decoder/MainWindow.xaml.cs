@@ -1,42 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Encoder_Decoder
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private HillCipher cipher = new HillCipher();
+
         public MainWindow()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Парсинг квадратной матрицы из строки вида "1 2; 3 4" или "2 3 1; 1 1 2; 3 0 1"
+        /// </summary>
         private int[,] ParseMatrix(string input)
         {
             try
             {
-                var rows = input.Split(';');
-                int[,] matrix = new int[2, 2];
+                var rows = input.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                int n = rows.Length;
+                int[,] matrix = new int[n, n];
 
-                for (int i = 0; i < 2; i++)
+                for (int i = 0; i < n; i++)
                 {
-                    var cols = rows[i].Trim().Split(' ');
-                    for (int j = 0; j < 2; j++)
+                    var cols = rows[i].Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (cols.Length != n)
+                        throw new Exception("Матрица должна быть квадратной");
+
+                    for (int j = 0; j < n; j++)
                         matrix[i, j] = int.Parse(cols[j]);
                 }
 
@@ -57,7 +51,7 @@ namespace Encoder_Decoder
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, "Ошибка шифрования", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -70,7 +64,7 @@ namespace Encoder_Decoder
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, "Ошибка дешифрования", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
