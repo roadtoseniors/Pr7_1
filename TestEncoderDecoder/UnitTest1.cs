@@ -3,11 +3,20 @@ using System;
 
 namespace TestEncoderDecoder
 {
+    /// <summary>
+    /// Набор модульных тестов для класса <see cref="HillCipher"/>.
+    /// Покрывает функциональные сценарии (шифрование, дешифрование, детерминант, обратная матрица)
+    /// и негативные сценарии (пустой ввод, null, необратимая матрица, паддинг).
+    /// </summary>
     [TestClass]
     public class UnitTest1
     {
+        /// <summary>Экземпляр шифра, используемый во всех тестах.</summary>
         private HillCipher cipher;
 
+        /// <summary>
+        /// Инициализирует экземпляр <see cref="HillCipher"/> перед каждым тестом.
+        /// </summary>
         [TestInitialize]
         public void Init()
         {
@@ -15,6 +24,12 @@ namespace TestEncoderDecoder
         }
 
         // TC_FUNC_1 — шифрование/дешифрование 2x2
+        /// <summary>
+        /// TC_FUNC_1: Проверяет, что шифрование и последующее дешифрование
+        /// текста с матрицей 2x2 возвращает исходную строку.
+        /// Текст «ПРИВЕТ» (длина 6) кратен размеру матрицы — паддинг не добавляется.
+        /// Ключ: [[3,2],[5,8]], det=14, gcd(14,33)=1.
+        /// </summary>
         [TestMethod]
         public void EncryptDecrypt_2x2_ShouldReturnOriginalTextWithPadding()
         {
@@ -30,6 +45,12 @@ namespace TestEncoderDecoder
         }
 
         // TC_FUNC_2 — шифрование/дешифрование 3x3
+        /// <summary>
+        /// TC_FUNC_2: Проверяет, что шифрование и последующее дешифрование
+        /// текста с матрицей 3x3 возвращает исходную строку.
+        /// Текст «СЕКРЕТ» (длина 6) кратен размеру матрицы — паддинг не добавляется.
+        /// Ключ: [[2,3,1],[1,1,2],[3,0,1]], det=14, gcd(14,33)=1.
+        /// </summary>
         [TestMethod]
         public void EncryptDecrypt_3x3_ShouldReturnOriginalTextWithPadding()
         {
@@ -50,6 +71,11 @@ namespace TestEncoderDecoder
         }
 
         // TC_FUNC_2b — проверка с паддингом для 3x3
+        /// <summary>
+        /// TC_FUNC_2b: Проверяет корректность паддинга при шифровании матрицей 3x3.
+        /// Текст «СЕКРЕ» (длина 5) дополняется до 6 символов буквой «Х»,
+        /// поэтому дешифрованный результат должен быть «СЕКРЕХ».
+        /// </summary>
         [TestMethod]
         public void EncryptDecrypt_3x3_WithPadding_ShouldReturnOriginalPlusX()
         {
@@ -68,6 +94,10 @@ namespace TestEncoderDecoder
         }
 
         // TC_FUNC_3 — детерминант
+        /// <summary>
+        /// TC_FUNC_3: Проверяет корректность вычисления определителя матрицы 2x2.
+        /// Для [[3,2],[5,8]]: det = 3*8 - 2*5 = 14.
+        /// </summary>
         [TestMethod]
         public void Determinant_ShouldBeCorrect()
         {
@@ -78,6 +108,11 @@ namespace TestEncoderDecoder
         }
 
         // TC_NEG_1 — вырожденная матрица
+        /// <summary>
+        /// TC_NEG_1: Проверяет, что при передаче необратимой матрицы (det=0)
+        /// метод <see cref="HillCipher.Encrypt"/> выбрасывает исключение.
+        /// Матрица [[2,4],[1,2]]: det = 2*2 - 4*1 = 0.
+        /// </summary>
         [TestMethod]
         public void Encrypt_WithNonInvertibleMatrix_ShouldHandleGracefully()
         {
@@ -97,6 +132,10 @@ namespace TestEncoderDecoder
         }
 
         // TC_NEG_2 — длина текста не кратна размеру матрицы
+        /// <summary>
+        /// TC_NEG_2: Проверяет, что при длине текста, не кратной размеру матрицы,
+        /// автоматически добавляется паддинг. «ПРИВЕ» (5 символов) + 1 «Х» = 6 символов.
+        /// </summary>
         [TestMethod]
         public void Encrypt_InvalidLength_ShouldAddPadding()
         {
@@ -108,6 +147,10 @@ namespace TestEncoderDecoder
         }
 
         // TC_NEG_3 — пустая строка
+        /// <summary>
+        /// TC_NEG_3: Проверяет, что передача пустой строки в <see cref="HillCipher.Encrypt"/>
+        /// приводит к выбросу исключения.
+        /// </summary>
         [TestMethod]
         public void Encrypt_EmptyString_ShouldThrow()
         {
@@ -124,6 +167,10 @@ namespace TestEncoderDecoder
         }
 
         // TC_NEG_4 — null
+        /// <summary>
+        /// TC_NEG_4: Проверяет, что передача <c>null</c> в <see cref="HillCipher.Encrypt"/>
+        /// приводит к выбросу исключения.
+        /// </summary>
         [TestMethod]
         public void Encrypt_Null_ShouldThrow()
         {
@@ -140,6 +187,10 @@ namespace TestEncoderDecoder
         }
 
         // TC_FUNC_4 — обратная матрица 2x2
+        /// <summary>
+        /// TC_FUNC_4: Проверяет корректность вычисления обратной матрицы для 2x2.
+        /// Произведение матрицы на её обратную должно давать единичную матрицу по mod 33.
+        /// </summary>
         [TestMethod]
         public void InverseMatrix_2x2_ShouldReturnIdentity()
         {
@@ -150,6 +201,10 @@ namespace TestEncoderDecoder
         }
 
         // TC_FUNC_5 — обратная матрица 3x3
+        /// <summary>
+        /// TC_FUNC_5: Проверяет корректность вычисления обратной матрицы для 3x3.
+        /// Произведение матрицы на её обратную должно давать единичную матрицу по mod 33.
+        /// </summary>
         [TestMethod]
         public void InverseMatrix_3x3_ShouldReturnIdentity()
         {
@@ -166,6 +221,13 @@ namespace TestEncoderDecoder
         }
 
         // вспомогательные методы
+        /// <summary>
+        /// Перемножает две квадратные матрицы по модулю 33.
+        /// Используется в тестах TC_FUNC_4 и TC_FUNC_5 для проверки обратной матрицы.
+        /// </summary>
+        /// <param name="a">Первая матрица n×n.</param>
+        /// <param name="b">Вторая матрица n×n.</param>
+        /// <returns>Результирующая матрица n×n, элементы взяты по mod 33.</returns>
         private int[,] Multiply(int[,] a, int[,] b)
         {
             int n = a.GetLength(0);
@@ -183,6 +245,12 @@ namespace TestEncoderDecoder
             return result;
         }
 
+        /// <summary>
+        /// Проверяет, является ли матрица единичной по mod 33.
+        /// Диагональные элементы должны равняться 1, остальные — 0.
+        /// </summary>
+        /// <param name="matrix">Квадратная матрица n×n.</param>
+        /// <returns><c>true</c>, если матрица единичная; иначе <c>false</c>.</returns>
         private bool IsIdentity(int[,] matrix)
         {
             int n = matrix.GetLength(0);
