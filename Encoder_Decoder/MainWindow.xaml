@@ -6,7 +6,22 @@
         xmlns:local="clr-namespace:Encoder_Decoder"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+    <Grid Margin="10">
+        <StackPanel Margin="78,30,78,29">
+
+            <TextBox x:Name="InputTextBox" 
+                     ToolTip="Введите текст"
+                     Margin="5"/>
+
+            <TextBox x:Name="MatrixBox" 
+                     ToolTip="Введите матрицу (например: 3 3; 2 5)"
+                     Margin="5"/>
+
+            <Button Content="Зашифровать" Click="Encrypt_Click" Margin="5"/>
+            <Button Content="Расшифровать" Click="Decrypt_Click" Margin="5"/>
+
+            <TextBox x:Name="ResultTextBox" Margin="5"/>
+
+        </StackPanel>
     </Grid>
 </Window>
