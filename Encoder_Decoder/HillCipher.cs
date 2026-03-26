@@ -1,11 +1,28 @@
 ﻿using System;
 using System.Text;
 
+/// <summary>
+/// Реализация шифра Хилла для русского алфавита (33 символа, mod 33).
+/// Поддерживает ключевые матрицы размером 2x2 и 3x3.
+/// </summary>
 public class HillCipher
 {
-    private const int Mod = 33; // русский алфавит
+    /// <summary>Модуль арифметики — размер русского алфавита.</summary>
+    private const int Mod = 33;
+
+    /// <summary>Русский алфавит, используемый для кодирования символов в числа и обратно.</summary>
     private string alphabet = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
 
+    /// <summary>
+    /// Шифрует текст методом Хилла с использованием заданной ключевой матрицы.
+    /// Если длина текста не кратна размеру матрицы, добавляется паддинг символом «Х».
+    /// </summary>
+    /// <param name="text">Открытый текст на русском языке. Не может быть null или пустым.</param>
+    /// <param name="key">Квадратная ключевая матрица (2x2 или 3x3), обратимая по mod 33.</param>
+    /// <returns>Зашифрованная строка из символов русского алфавита.</returns>
+    /// <exception cref="Exception">
+    /// Выбрасывается, если текст пустой, матрица не квадратная или необратима по mod 33.
+    /// </exception>
     public string Encrypt(string text, int[,] key)
     {
         if (string.IsNullOrEmpty(text))
@@ -39,12 +56,26 @@ public class HillCipher
         return result.ToString();
     }
 
+    /// <summary>
+    /// Дешифрует текст, зашифрованный методом Хилла.
+    /// Вычисляет обратную ключевую матрицу и применяет <see cref="Encrypt"/>.
+    /// </summary>
+    /// <param name="text">Зашифрованный текст.</param>
+    /// <param name="key">Ключевая матрица, использованная при шифровании.</param>
+    /// <returns>Расшифрованная строка (возможно, с паддинг-символом «Х» в конце).</returns>
+    /// <exception cref="Exception">Выбрасывается, если матрица необратима по mod 33.</exception>
     public string Decrypt(string text, int[,] key)
     {
         int[,] inverse = GetInverseMatrix(key);
         return Encrypt(text, inverse);
     }
 
+    /// <summary>
+    /// Умножает квадратную матрицу на вектор-столбец по модулю <see cref="Mod"/>.
+    /// </summary>
+    /// <param name="matrix">Квадратная матрица размером n×n.</param>
+    /// <param name="vector">Вектор длиной n.</param>
+    /// <returns>Результирующий вектор длиной n, каждый элемент взят по mod 33.</returns>
     private int[] MultiplyMatrixVector(int[,] matrix, int[] vector)
     {
         int n = vector.Length;
@@ -61,6 +92,14 @@ public class HillCipher
         return result;
     }
 
+    /// <summary>
+    /// Вычисляет определитель квадратной матрицы размером 2x2 или 3x3.
+    /// </summary>
+    /// <param name="matrix">Квадратная матрица 2x2 или 3x3.</param>
+    /// <returns>Целочисленный определитель (без взятия по модулю).</returns>
+    /// <exception cref="Exception">
+    /// Выбрасывается, если матрица не квадратная или её размер отличается от 2 или 3.
+    /// </exception>
     public int GetDeterminant(int[,] matrix)
     {
         int n = matrix.GetLength(0);
@@ -79,12 +118,27 @@ public class HillCipher
             throw new Exception("Поддерживаются только 2x2 и 3x3 матрицы");
     }
 
+    /// <summary>
+    /// Проверяет, является ли матрица обратимой по модулю <see cref="Mod"/>.
+    /// Условие: определитель матрицы (mod 33) взаимно прост с 33.
+    /// </summary>
+    /// <param name="matrix">Квадратная матрица 2x2 или 3x3.</param>
+    /// <returns><c>true</c>, если матрица обратима по mod 33; иначе <c>false</c>.</returns>
     public bool IsInvertible(int[,] matrix)
     {
         int det = ((GetDeterminant(matrix) % Mod) + Mod) % Mod;
         return GCD(det, Mod) == 1;
     }
 
+    /// <summary>
+    /// Вычисляет обратную матрицу по модулю <see cref="Mod"/> для матриц 2x2 и 3x3.
+    /// Для 3x3 используется метод матрицы алгебраических дополнений (adjugate).
+    /// </summary>
+    /// <param name="matrix">Обратимая квадратная матрица 2x2 или 3x3.</param>
+    /// <returns>Обратная матрица, все элементы которой лежат в диапазоне [0, 32].</returns>
+    /// <exception cref="Exception">
+    /// Выбрасывается, если матрица не квадратная или её определитель не имеет обратного по mod 33.
+    /// </exception>
     public int[,] GetInverseMatrix(int[,] matrix)
     {
         int n = matrix.GetLength(0);
@@ -127,6 +181,14 @@ public class HillCipher
         return result;
     }
 
+    /// <summary>
+    /// Находит обратный элемент <paramref name="a"/> по модулю <paramref name="mod"/>
+    /// методом перебора (подходит для малых значений модуля).
+    /// </summary>
+    /// <param name="a">Число, для которого ищется обратный элемент.</param>
+    /// <param name="mod">Модуль (33 для русского алфавита).</param>
+    /// <returns>Такое <c>x</c>, что <c>(a * x) % mod == 1</c>.</returns>
+    /// <exception cref="Exception">Выбрасывается, если обратного элемента не существует.</exception>
     private int ModInverse(int a, int mod)
     {
         a = (a % mod + mod) % mod;
@@ -136,6 +198,12 @@ public class HillCipher
         throw new Exception("Нет обратного элемента");
     }
 
+    /// <summary>
+    /// Вычисляет наибольший общий делитель двух чисел алгоритмом Евклида.
+    /// </summary>
+    /// <param name="a">Первое число.</param>
+    /// <param name="b">Второе число.</param>
+    /// <returns>НОД чисел <paramref name="a"/> и <paramref name="b"/>.</returns>
     private int GCD(int a, int b)
     {
         while (b != 0)
