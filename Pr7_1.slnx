@@ -4,4 +4,5 @@
   </Folder>
   <Project Path="Encoder_Decoder/Encoder_Decoder.csproj" />
   <Project Path="Pr7_1/Pr7_1.csproj" />
+  <Project Path="TestEncoderDecoder/TestEncoderDecoder.csproj" />
 </Solution>
