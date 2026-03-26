@@ -20,12 +20,11 @@ public class HillCipher
         if (!IsInvertible(key))
             throw new Exception("Матрица необратима");
 
-        // добавляем отступ, если длина текста не кратна n
+        // паддинг
         while (text.Length % n != 0)
             text += "Х";
 
         var result = new StringBuilder();
-
         for (int i = 0; i < text.Length; i += n)
         {
             int[] vector = new int[n];
@@ -69,73 +68,60 @@ public class HillCipher
             throw new Exception("Матрица должна быть квадратной");
 
         if (n == 2)
-        {
             return matrix[0, 0] * matrix[1, 1] - matrix[0, 1] * matrix[1, 0];
-        }
         else if (n == 3)
         {
-            return
-                matrix[0, 0] * (matrix[1, 1] * matrix[2, 2] - matrix[1, 2] * matrix[2, 1]) -
-                matrix[0, 1] * (matrix[1, 0] * matrix[2, 2] - matrix[1, 2] * matrix[2, 0]) +
-                matrix[0, 2] * (matrix[1, 0] * matrix[2, 1] - matrix[1, 1] * matrix[2, 0]);
+            return matrix[0, 0] * (matrix[1, 1] * matrix[2, 2] - matrix[1, 2] * matrix[2, 1])
+                 - matrix[0, 1] * (matrix[1, 0] * matrix[2, 2] - matrix[1, 2] * matrix[2, 0])
+                 + matrix[0, 2] * (matrix[1, 0] * matrix[2, 1] - matrix[1, 1] * matrix[2, 0]);
         }
         else
-        {
             throw new Exception("Поддерживаются только 2x2 и 3x3 матрицы");
-        }
     }
 
     public bool IsInvertible(int[,] matrix)
     {
-        int det = GetDeterminant(matrix) % Mod;
-        return GCD(det, Mod) == 1; // обратима, если gcd(det, Mod) == 1
+        int det = ((GetDeterminant(matrix) % Mod) + Mod) % Mod;
+        return GCD(det, Mod) == 1;
     }
 
     public int[,] GetInverseMatrix(int[,] matrix)
     {
         int n = matrix.GetLength(0);
-
         if (n != matrix.GetLength(1))
             throw new Exception("Матрица должна быть квадратной");
 
-        int det = GetDeterminant(matrix);
-        int invDet = ModInverse((det % Mod + Mod) % Mod, Mod);
-
+        int det = ((GetDeterminant(matrix) % Mod) + Mod) % Mod;
+        int invDet = ModInverse(det, Mod);
         int[,] result = new int[n, n];
 
         if (n == 2)
         {
-            result[0, 0] = matrix[1, 1];
-            result[1, 1] = matrix[0, 0];
-            result[0, 1] = -matrix[0, 1];
-            result[1, 0] = -matrix[1, 0];
-
-            for (int i = 0; i < 2; i++)
-                for (int j = 0; j < 2; j++)
-                    result[i, j] = (result[i, j] * invDet % Mod + Mod) % Mod;
+            result[0, 0] = (matrix[1, 1] * invDet % Mod + Mod) % Mod;
+            result[0, 1] = (-matrix[0, 1] * invDet % Mod + Mod) % Mod;
+            result[1, 0] = (-matrix[1, 0] * invDet % Mod + Mod) % Mod;
+            result[1, 1] = (matrix[0, 0] * invDet % Mod + Mod) % Mod;
         }
         else if (n == 3)
         {
-            // Алгебраическое дополнение для 3x3
-            result[0, 0] = (matrix[1, 1] * matrix[2, 2] - matrix[1, 2] * matrix[2, 1]);
-            result[0, 1] = -(matrix[0, 1] * matrix[2, 2] - matrix[0, 2] * matrix[2, 1]);
-            result[0, 2] = (matrix[0, 1] * matrix[1, 2] - matrix[0, 2] * matrix[1, 1]);
+            // Матрица кофакторов (cofactor matrix)
+            int[,] cof = new int[3, 3];
+            cof[0, 0] = (matrix[1, 1] * matrix[2, 2] - matrix[1, 2] * matrix[2, 1]);
+            cof[0, 1] = -(matrix[1, 0] * matrix[2, 2] - matrix[1, 2] * matrix[2, 0]);
+            cof[0, 2] = (matrix[1, 0] * matrix[2, 1] - matrix[1, 1] * matrix[2, 0]);
 
-            result[1, 0] = -(matrix[1, 0] * matrix[2, 2] - matrix[1, 2] * matrix[2, 0]);
-            result[1, 1] = (matrix[0, 0] * matrix[2, 2] - matrix[0, 2] * matrix[2, 0]);
-            result[1, 2] = -(matrix[0, 0] * matrix[1, 2] - matrix[0, 2] * matrix[1, 0]);
+            cof[1, 0] = -(matrix[0, 1] * matrix[2, 2] - matrix[0, 2] * matrix[2, 1]);
+            cof[1, 1] = (matrix[0, 0] * matrix[2, 2] - matrix[0, 2] * matrix[2, 0]);
+            cof[1, 2] = -(matrix[0, 0] * matrix[2, 1] - matrix[0, 1] * matrix[2, 0]);
 
-            result[2, 0] = (matrix[1, 0] * matrix[2, 1] - matrix[1, 1] * matrix[2, 0]);
-            result[2, 1] = -(matrix[0, 0] * matrix[2, 1] - matrix[0, 1] * matrix[2, 0]);
-            result[2, 2] = (matrix[0, 0] * matrix[1, 1] - matrix[0, 1] * matrix[1, 0]);
+            cof[2, 0] = (matrix[0, 1] * matrix[1, 2] - matrix[0, 2] * matrix[1, 1]);
+            cof[2, 1] = -(matrix[0, 0] * matrix[1, 2] - matrix[0, 2] * matrix[1, 0]);
+            cof[2, 2] = (matrix[0, 0] * matrix[1, 1] - matrix[0, 1] * matrix[1, 0]);
 
-            // транспонируем и умножаем на обратный детерминант
-            int[,] transposed = new int[3, 3];
+            // Adjugate = транспонированная матрица кофакторов, умноженная на invDet
             for (int i = 0; i < 3; i++)
                 for (int j = 0; j < 3; j++)
-                    transposed[i, j] = (result[j, i] * invDet % Mod + Mod) % Mod;
-
-            result = transposed;
+                    result[i, j] = (cof[j, i] * invDet % Mod + Mod) % Mod;
         }
 
         return result;
@@ -144,11 +130,9 @@ public class HillCipher
     private int ModInverse(int a, int mod)
     {
         a = (a % mod + mod) % mod;
-
         for (int x = 1; x < mod; x++)
             if ((a * x) % mod == 1)
                 return x;
-
         throw new Exception("Нет обратного элемента");
     }
 

@@ -1,7 +1,6 @@
 <Solution>
   <Folder Name="/Элементы решения/">
     <File Path="../../../Desktop/Диаграмма вариантов использования.drawio.pdf" />
-    <File Path="HillCipher.cs" />
   </Folder>
   <Project Path="Encoder_Decoder/Encoder_Decoder.csproj" />
   <Project Path="Pr7_1/Pr7_1.csproj" />
