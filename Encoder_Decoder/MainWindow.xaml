@@ -5,23 +5,227 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Encoder_Decoder"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid Margin="10">
-        <StackPanel Margin="78,30,78,29">
+        Title="Шифр Хилла" Height="540" Width="820"
+        WindowStartupLocation="CenterScreen"
+        Background="#0F0F13">
 
-            <TextBox x:Name="InputTextBox" 
-                     ToolTip="Введите текст (например: привет)"
-                     Margin="5"/>
+    <Window.Resources>
+        <!-- Цвета -->
+        <SolidColorBrush x:Key="BackgroundDark"   Color="#0F0F13"/>
+        <SolidColorBrush x:Key="SurfaceColor"     Color="#1A1A24"/>
+        <SolidColorBrush x:Key="BorderColor"      Color="#2E2E42"/>
+        <SolidColorBrush x:Key="AccentColor"      Color="#7C6BF0"/>
+        <SolidColorBrush x:Key="AccentHover"      Color="#9A8CF5"/>
+        <SolidColorBrush x:Key="SecondaryAccent"  Color="#2E2E42"/>
+        <SolidColorBrush x:Key="TextPrimary"      Color="#E8E6F0"/>
+        <SolidColorBrush x:Key="TextMuted"        Color="#6B6880"/>
 
-            <TextBox x:Name="MatrixBox" 
-                     ToolTip="Введите матрицу (например: 1 2; 3 7)"
-                     Margin="5"/>
+        <!-- Стиль TextBox -->
+        <Style x:Key="StyledTextBox" TargetType="TextBox">
+            <Setter Property="Background"       Value="#1A1A24"/>
+            <Setter Property="Foreground"       Value="#E8E6F0"/>
+            <Setter Property="BorderBrush"      Value="#2E2E42"/>
+            <Setter Property="BorderThickness"  Value="1"/>
+            <Setter Property="Padding"          Value="12,10"/>
+            <Setter Property="FontSize"         Value="13"/>
+            <Setter Property="FontFamily"       Value="Consolas"/>
+            <Setter Property="CaretBrush"       Value="#7C6BF0"/>
+            <Setter Property="SelectionBrush"   Value="#7C6BF0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalScrollBarVisibility="Auto"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#7C6BF0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-            <Button Content="Зашифровать" Click="Encrypt_Click" Margin="5"/>
-            <Button Content="Расшифровать" Click="Decrypt_Click" Margin="5"/>
+        <!-- Кнопка основная (акцентная) -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background"       Value="#7C6BF0"/>
+            <Setter Property="Foreground"       Value="White"/>
+            <Setter Property="BorderThickness"  Value="0"/>
+            <Setter Property="FontSize"         Value="13"/>
+            <Setter Property="FontFamily"       Value="Segoe UI Semibold"/>
+            <Setter Property="Padding"          Value="0,12"/>
+            <Setter Property="Cursor"           Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#9A8CF5"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#6355D4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-            <TextBox x:Name="ResultTextBox" Margin="5"/>
+        <!-- Кнопка вторичная -->
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Background"       Value="#1A1A24"/>
+            <Setter Property="Foreground"       Value="#A09CC0"/>
+            <Setter Property="BorderBrush"      Value="#2E2E42"/>
+            <Setter Property="BorderThickness"  Value="1"/>
+            <Setter Property="FontSize"         Value="13"/>
+            <Setter Property="FontFamily"       Value="Segoe UI Semibold"/>
+            <Setter Property="Padding"          Value="0,12"/>
+            <Setter Property="Cursor"           Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#232333"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#7C6BF0"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#1A1A2E"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        </StackPanel>
+        <!-- Стиль метки -->
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground"  Value="#6B6880"/>
+            <Setter Property="FontSize"    Value="11"/>
+            <Setter Property="FontFamily"  Value="Segoe UI"/>
+            <Setter Property="Margin"      Value="2,0,0,4"/>
+            <Setter Property="FontWeight"  Value="SemiBold"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Боковая полоса-акцент -->
+        <Rectangle Width="4" HorizontalAlignment="Left"
+                   Fill="#7C6BF0" RadiusX="2" RadiusY="2"/>
+
+        <Grid Margin="32,28,32,28">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Заголовок -->
+                <RowDefinition Height="16"/>
+                <RowDefinition Height="Auto"/>
+                <!-- Поля ввода -->
+                <RowDefinition Height="12"/>
+                <RowDefinition Height="Auto"/>
+                <!-- Кнопки -->
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="*"/>
+                <!-- Результат -->
+            </Grid.RowDefinitions>
+
+            <!-- Заголовок -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
+                
+                <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="ШИФР ХИЛЛА"
+                               FontFamily="Segoe UI" FontWeight="Bold"
+                               FontSize="15" Foreground="#E8E6F0"/>
+                    <TextBlock Text="Симметричный матричный шифр · mod 33"
+                               FontFamily="Segoe UI" FontSize="11"
+                               Foreground="#6B6880" Margin="0,1,0,0"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Поля ввода -->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="220"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Текст -->
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="ОТКРЫТЫЙ / ЗАШИФРОВАННЫЙ ТЕКСТ"
+                               Style="{StaticResource FieldLabel}"/>
+                    <TextBox x:Name="InputTextBox"
+                             Style="{StaticResource StyledTextBox}"
+                             Height="72"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             ToolTip="Введите текст на русском языке"/>
+                </StackPanel>
+
+                <!-- Матрица -->
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="КЛЮЧЕВАЯ МАТРИЦА"
+                               Style="{StaticResource FieldLabel}"/>
+                    <TextBox x:Name="MatrixBox"
+                             Style="{StaticResource StyledTextBox}"
+                             Height="72"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             ToolTip="Например: 1 2; 3 7"/>
+                    <TextBlock Text="Строки через «;», элементы через пробел"
+                               FontSize="10" Foreground="#4A4860"
+                               FontFamily="Segoe UI" Margin="2,5,0,0"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Кнопки -->
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Зашифровать"
+                        Style="{StaticResource PrimaryButton}"
+                        Click="Encrypt_Click" Height="40"/>
+                <Button Grid.Column="2" Content="Расшифровать"
+                        Style="{StaticResource SecondaryButton}"
+                        Click="Decrypt_Click" Height="40" Cursor="Hand"/>
+            </Grid>
+
+            <!-- Результат -->
+            <StackPanel Grid.Row="6">
+                <TextBlock Text="РЕЗУЛЬТАТ"
+                           Style="{StaticResource FieldLabel}"/>
+                <TextBox x:Name="ResultTextBox"
+                         Style="{StaticResource StyledTextBox}"
+                         IsReadOnly="True"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         MinHeight="80"
+                         Background="#13131C"
+                         FontSize="15"
+                         ToolTip="Результат операции"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>
