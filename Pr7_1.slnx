@@ -2,7 +2,7 @@
   <Folder Name="/Элементы решения/">
     <File Path="../../../Desktop/Диаграмма вариантов использования.drawio.pdf" />
   </Folder>
-  <Project Path="Encoder_Decoder/Encoder_Decoder.csproj" />
+  <Project Path="Encoder_Decoder/Encoder_Decoder.csproj" Id="5fa7cd3f-e395-41c1-a513-c5cddc632f85" />
   <Project Path="Pr7_1/Pr7_1.csproj" />
-  <Project Path="TestEncoderDecoder/TestEncoderDecoder.csproj" />
+  <Project Path="TestEncoderDecoder/TestEncoderDecoder.csproj" Id="adb7cdeb-628e-4fad-b70a-8a8b6aa7dfd4" />
 </Solution>

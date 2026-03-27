@@ -10,11 +10,11 @@
         <StackPanel Margin="78,30,78,29">
 
             <TextBox x:Name="InputTextBox" 
-                     ToolTip="Введите текст"
+                     ToolTip="Введите текст (например: привет)"
                      Margin="5"/>
 
             <TextBox x:Name="MatrixBox" 
-                     ToolTip="Введите матрицу (например: 3 3; 2 5)"
+                     ToolTip="Введите матрицу (например: 1 2; 3 7)"
                      Margin="5"/>
 
             <Button Content="Зашифровать" Click="Encrypt_Click" Margin="5"/>
