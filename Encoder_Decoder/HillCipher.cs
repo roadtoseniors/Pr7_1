@@ -37,6 +37,11 @@ public class HillCipher
         if (!IsInvertible(key))
             throw new Exception("Матрица необратима");
 
+        // Валидация: все символы должны присутствовать в алфавите
+        foreach (char c in text)
+            if (alphabet.IndexOf(c) < 0)
+                throw new Exception($"Недопустимый символ: '{c}'. Используйте только русский алфавит.");
+
         // паддинг
         while (text.Length % n != 0)
             text += "Х";
